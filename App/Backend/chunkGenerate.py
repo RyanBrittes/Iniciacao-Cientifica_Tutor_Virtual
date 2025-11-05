@@ -3,29 +3,53 @@ from extractorPDF import ExtractorPDF
 class ChunkGenerate():
     def __init__(self):
         self.extractor = ExtractorPDF()
-        self.chunk_static_size = 500
-        self.overlap_static_size = 50
+        self.chunk_static_size_text = 500
+        self.chunk_static_size_token = 500
+        self.overlap_static_token = 50
+        self.overlap_static_text = 50
         self.overlap_dinamic_size = 10
 
-    def create_static_chunk(self):
+    def create_static_chunk_text(self):
         text = self.extractor.extract_pdf_to_text()
         chunks = []
         start = 0
         text_length = len(text)
 
         while start < text_length:
-            end = min(start + self.chunk_static_size, text_length)
+            end = min(start + self.chunk_static_size_text, text_length)
             chunk = text[start:end]
             chunks.append(chunk)
             
             if end >= text_length:
                 break
                 
-            start += self.chunk_static_size - self.overlap_static_size
+            start += self.chunk_static_size_text - self.overlap_static_text
             
-            if self.overlap_static_size >= self.chunk_static_size:
+            if self.overlap_static_text >= self.chunk_static_size_text:
                 start = end
         
+        return chunks
+
+    def create_static_chunk_token(self):
+        text = self.extractor.extract_pdf_to_token()
+        chunk = ""
+        chunks = []
+        overlap = ""
+        tokens_overlap = []
+
+        for i in range(len(text)):
+            chunk += text[i] + " "
+
+            if (i + 1) % self.chunk_static_size_token == 0 or i == range(len(text)):
+                chunks.append(overlap + chunk)
+                chunk = ""
+                overlap = ""
+                tokens_overlap.append(text[(i - self.overlap_static_token):i + 1])
+                
+                for c in  tokens_overlap[0]:
+                    overlap += c + ""
+                tokens_overlap.clear()
+
         return chunks
     
     def create_dinamic_chunk(self):
@@ -74,4 +98,4 @@ class ChunkGenerate():
 
             count += 1
 
-        return chunks       
+        return chunks

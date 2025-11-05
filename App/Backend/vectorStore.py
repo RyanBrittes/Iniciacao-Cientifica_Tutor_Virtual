@@ -38,3 +38,4 @@ class VectorStoreMongo():
 
     def ping(self):
         self.mongo_client.admin.command('ping')
+        print("Entrou!")
