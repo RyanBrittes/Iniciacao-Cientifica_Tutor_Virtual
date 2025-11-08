@@ -1,4 +1,6 @@
 import os
+import logging
+from torch import embedding
 from App.Backend.rag.embedGenerate import EmbedGenerate
 from App.Backend.rag.chunkGenerate import ChunkGenerate
 from pymongo import MongoClient
@@ -14,6 +16,27 @@ class VectorStoreMongo():
         self.collection_access = self.db_access[os.getenv("MONGO_COLLECTION")]
         self.embedding = EmbedGenerate()
         self.chunking = ChunkGenerate()
+
+    def create_obj(doc_name: str, chunk_id: int, text: str, embedding: list[float]) -> dict:
+        return {
+            "doc_name": doc_name,
+            "chunk_id": chunk_id,
+            "text": text,
+            "embedding": embedding
+        }
+    
+    def insert_objs(collection, data: dict) -> str | None:
+    #verifica se o objeto da colecao e valido
+        if collection is None:
+            logging.error("Collection unavailable for insertion.")
+            return None
+        try:
+            res = collection.insert_several(data, ordered=False)
+            return [str(_id) for _id in res.inserted_ids]
+        except Exception as e:
+            logging.error(f"Error inserting many objects: {e}")
+            return None
+
 
     def insert_single(self):
         chunk_collection = self.chunking.create_dinamic_chunk()
