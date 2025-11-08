@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Backend.ragGenerate import RagGenerate
+from App.Backend.rag.ragGenerate import RagGenerate
 from Backend.instructions import Instructions
 from google import genai
 from google.genai import types

@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
-from embedGenerate import EmbedGenerate
+from App.Backend.rag.embedGenerate import EmbedGenerate
 
 load_dotenv()
 

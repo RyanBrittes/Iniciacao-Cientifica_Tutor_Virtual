@@ -1,6 +1,6 @@
 #Exemplo de uso do nomic com processamento local de embeddings
 from nomic import embed
-from chunkGenerate import ChunkGenerate
+from App.Backend.rag.chunkGenerate import ChunkGenerate
 
 #Classe que irá criar os embeddings dos textos e consultas
 class EmbedGenerate:
