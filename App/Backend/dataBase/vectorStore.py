@@ -1,6 +1,5 @@
 import os
 import logging
-from torch import embedding
 from App.Backend.rag.embedGenerate import EmbedGenerate
 from App.Backend.rag.chunkGenerate import ChunkGenerate
 from pymongo import MongoClient
@@ -17,47 +16,25 @@ class VectorStoreMongo():
         self.embedding = EmbedGenerate()
         self.chunking = ChunkGenerate()
 
-    def create_obj(doc_name: str, chunk_id: int, text: str, embedding: list[float]) -> dict:
-        return {
-            "doc_name": doc_name,
-            "chunk_id": chunk_id,
-            "text": text,
-            "embedding": embedding
-        }
-    
-    def insert_objs(collection, data: dict) -> str | None:
-    #verifica se o objeto da colecao e valido
-        if collection is None:
-            logging.error("Collection unavailable for insertion.")
-            return None
-        try:
-            res = collection.insert_several(data, ordered=False)
-            return [str(_id) for _id in res.inserted_ids]
-        except Exception as e:
-            logging.error(f"Error inserting many objects: {e}")
-            return None
-
-
-    def insert_single(self):
-        chunk_collection = self.chunking.create_dinamic_chunk()
-        embed_collection = self.embedding.embed_text()
-
-        for i in range(len(chunk_collection)):
-            new_object = {
-                '_id': i,
-                'vector': embed_collection[i],
-                'chunk': chunk_collection[i]
-            }
-
-            self.collection_access.insert_one(new_object)
-
     def insert_several(self):
-        chunk_collection = self.chunking.create_dinamic_chunk()
-        embed_collection = self.embedding.embed_text()
+            chunk_collection = self.chunking.create_dinamic_chunk()
+            embed_collection = self.embedding.embed_text()
 
-        self.collection_access.insert_many(
-            {'_id': i, 'vector': embed_collection[i], 'chunk': chunk_collection[i]} for i in range(len(chunk_collection))
-            )
+            obj = [
+                {
+                    'text': chunk_collection[i],
+                    'embedding': embed_collection[i]
+                }
+                for i in range(len(chunk_collection))
+            ]
+
+
+            try:
+                self.collection_access.insert_many(obj)
+                logging.info("inserido no banco com sucesso")
+            except Exception as e:
+                logging.error(f"erro ao inserir no banco: {e}")
+
 
     def ping(self):
         self.mongo_client.admin.command('ping')
