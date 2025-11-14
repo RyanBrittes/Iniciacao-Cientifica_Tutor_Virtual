@@ -13,29 +13,29 @@ embedding = EmbedGenerate()
 prompt = input('Digite a frase para busca: ')
 query = embedding.embed_query(prompt)
 
-collection_access.create_index(
-    [('vector', 'vector')],
-    name='vector-search-index',
-    extra={'vectorIndexType': 'hnsw', 'vectorIndexParams': {'dim': 768, 'similarity': 'cosine'}}
-)
+pipeline = [
+    {
+        "$vectorSearch": {
+            "index": "vector_index",          
+            "path": "objplusembbeding",              
+            "queryVector" : query,
+            "numCandidates": 100,
+            "limit": 5
+        }
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "text": 1,
+            "score": {"$meta": "vectorSearchScore"}
+        }
+    }
+]
 
-search = db_access.command({
-    'aggregate': 'vector-store',
-    'pipeline': [
-        {
-            "$vectorSearch": {
-                "queryVector": query,
-                "path": "vector",
-                "numCandidates": 15,
-                "limit": 8,
-                "index": "vector-search-index"
-                }
-        },
-        {"$project": {"_id": 0, "texto": 1, "score": {"$meta": "vectorSearchScore"}}}
-    ],
-    'cursor': {}
-})
+results = list(collection_access.aggregate(pipeline))
 
+print("\nInput →", prompt)
+print("\nResultados semelhantes:")
 
 print(f"\nInput -> {prompt}")
-print(f"\nDocumentos semelhantes:\n{search}")
+print(f"\nDocumentos semelhantes:\n{results}")
