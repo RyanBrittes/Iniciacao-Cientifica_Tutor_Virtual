@@ -1,5 +1,9 @@
-from App.Backend.dataBase.vectorStore import VectorStore
-from App.Backend.rag.embedGenerate import EmbedGenerate
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from dataBase.vectorStore import VectorStore
+from rag.embedGenerate import EmbedGenerate
 
 #Classe utilizada para juntar as funcionalidades do RAG e pronta para ser chamada
 class RagGenerate():

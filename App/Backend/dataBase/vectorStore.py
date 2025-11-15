@@ -1,7 +1,10 @@
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import logging
-from App.Backend.rag.embedGenerate import EmbedGenerate
-from App.Backend.rag.chunkGenerate import ChunkGenerate
+from rag.embedGenerate import EmbedGenerate
+from rag.chunkGenerate import ChunkGenerate
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
@@ -17,8 +20,7 @@ class VectorStoreMongo():
         self.chunking = ChunkGenerate()
 
     def insert_several(self):
-            chunk_collection = self.chunking.create_dinamic_chunk()
-            embed_collection = self.embedding.embed_text()
+            embed_collection, chunk_collection = self.embedding.embed_text()
 
             obj = [
                 {
@@ -28,13 +30,11 @@ class VectorStoreMongo():
                 for i in range(len(chunk_collection))
             ]
 
-
             try:
                 self.collection_access.insert_many(obj)
-                logging.info("inserido no banco com sucesso")
+                logging.info("Inserido no banco com sucesso")
             except Exception as e:
-                logging.error(f"erro ao inserir no banco: {e}")
-
+                logging.error(f"Erro ao inserir no banco: {e}")
 
     def ping(self):
         self.mongo_client.admin.command('ping')

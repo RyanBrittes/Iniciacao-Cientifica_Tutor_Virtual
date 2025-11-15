@@ -1,7 +1,11 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
-from App.Backend.rag.embedGenerate import EmbedGenerate
+from rag.embedGenerate import EmbedGenerate
 
 load_dotenv()
 
