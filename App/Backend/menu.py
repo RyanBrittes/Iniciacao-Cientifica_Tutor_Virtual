@@ -3,7 +3,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 from instructions import Instructions
-from App.Backend.rag.ragGenerate import RagGenerate
+from rag.ragGenerate import RagGenerate
 
 load_dotenv()
 
