@@ -2,8 +2,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from App.Backend.rag.ragGenerate import RagGenerate
 from Backend.instructions import Instructions
+from Backend.dataBase.vectorSearch import VectorSearch
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
@@ -17,12 +17,12 @@ class MenuBackend():
         self.chat = self.client.chats.create(model="gemma-3-27b-it", 
                                              config= types.GenerateContentConfig(
                                                  temperature=0.1,
-                                                 top_p=1,
-                                                 max_output_tokens=10,
-                                                 top_k=20))
-        self.recovery = RagGenerate()
+                                                 #top_p=1,
+                                                 #max_output_tokens=10,
+                                                 #top_k=20
+                                                 ))
+        self.recovery = VectorSearch()
         self.instructions = Instructions()
-        self.collection_name = "Chunk_Dinamic_NoOverlap"
 
     def get_menu(self):
         while True:
@@ -87,14 +87,7 @@ class MenuBackend():
                 break
             
             if opt != "4":
-
-                relevant_docs = self.recovery.compair_vector(question, self.collection_name)
-
-                context_text = ""
-                if 'documents' in relevant_docs and relevant_docs['documents']:
-                    for doc_list in relevant_docs['documents']:
-                        for doc in doc_list:
-                            context_text += f"{doc}\n\n"
+                context_text = self.recovery.search(question)['text']
 
                 full_prompt = f"""{persona}
                     {instruction}

@@ -22,13 +22,13 @@ class VectorSearch:
         pipeline = [
             {
                 "$vectorSearch": {
-                    "index": "vector_index",
-                    "path": "objplusembbeding",
+                    "index": "cosine-index",
+                    "path": "embedding",
                     "queryVector": query,
                     "numCandidates": 100,
                     "limit": 5
                 }
-            },
+            },  
             {
                 "$project": {
                     "_id": 0,
@@ -39,7 +39,8 @@ class VectorSearch:
         ]
 
         results = list(self.collection_access.aggregate(pipeline))
-        return results
+        
+        return results[0]
 
 if __name__ == "__main__":
     searcher = VectorSearch()
@@ -51,3 +52,4 @@ if __name__ == "__main__":
 
     print(f"\nInput -> {prompt}")
     print(f"\nDocumentos semelhantes:\n{results}")
+

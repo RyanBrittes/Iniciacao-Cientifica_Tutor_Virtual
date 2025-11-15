@@ -1,4 +1,5 @@
-from App.Backend.menu import Menu
-start_menu = Menu()
+from menuCMD import MenuBackend
+
+start_menu = MenuBackend()
 
 start_menu.get_menu()

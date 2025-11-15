@@ -19,7 +19,7 @@ class EmbedGenerate:
             task_type='search_document'
             #inference_mode='local',
             #device='cpu'
-        )['embeddings']
+        )['embeddings'][0]
         return [output, chunks]
     
     #Este código está implementado utilizando a API do Nomic, caso deseje processar localmente,
@@ -31,7 +31,7 @@ class EmbedGenerate:
             task_type='search_document'
             #inference_mode='local',
             #device='cpu'
-        )['embeddings']
+        )['embeddings'][0]
         return output
     
     def embed_openai(self):
